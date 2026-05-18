@@ -36,6 +36,8 @@ jobs:
         with:
           python-version: "3.14"
           enable-cache: true
+      - name: Check PyPI project name
+        run: python -c "import tomllib; assert tomllib.load(open('pyproject.toml', 'rb'))['project']['name'] == 'bling-jwt-auth'"
       - name: Build package
         run: uv build
       - name: Check package metadata
