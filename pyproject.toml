@@ -3,7 +3,7 @@ requires = ["hatchling>=1.24"]
 build-backend = "hatchling.build"
 
 [project]
-name = "bling-jwt-auth-python"
+name = "bling-jwt-auth"
 version = "0.1.0"
 description = "OAuth 2.0 / JWT authentication helpers for the Bling API v3"
 readme = "README.md"

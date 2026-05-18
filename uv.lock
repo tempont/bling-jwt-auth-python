@@ -36,7 +36,7 @@ wheels = [
 ]
 
 [[package]]
-name = "bling-jwt-auth-python"
+name = "bling-jwt-auth"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
