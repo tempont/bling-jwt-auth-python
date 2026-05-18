@@ -15,6 +15,5 @@ wheels/
 
 # Local secrets and token files
 .env
-.env.*
 *.db
 token.json
