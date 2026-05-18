@@ -4,20 +4,20 @@ Biblioteca Python simples para autenticar na **API v3 do Bling** usando OAuth 2.
 
 Ela ajuda a:
 
-- gerar a URL de autorizacao do Bling;
+- gerar a URL de autorização do Bling;
 - trocar o `code` recebido por tokens;
 - salvar os tokens em arquivo ou SQLite;
-- renovar o access token automaticamente quando necessario;
+- renovar o access token automaticamente quando necessário;
 - montar os headers corretos para chamar a API do Bling.
 
-Versao em ingles: [docs/README.en.md](docs/README.en.md)
+Versão em inglês: [docs/README.en.md](docs/README.en.md)
 
 ## Requisitos
 
 - Python 3.14 ou superior
-- Uma aplicacao OAuth cadastrada no Bling
+- Uma aplicação OAuth cadastrada no Bling
 
-## Instalacao
+## Instalação
 
 Instale pelo `pip`:
 
@@ -31,13 +31,13 @@ Ou instale direto do GitHub:
 pip install "git+https://github.com/mercanatu/bling-jwt-auth-python.git"
 ```
 
-Para desenvolvimento local neste repositorio, use:
+Para desenvolvimento local neste repositório, use:
 
 ```bash
 uv sync --extra dev
 ```
 
-## Configuracao
+## Configuração
 
 Copie o arquivo de exemplo:
 
@@ -45,7 +45,7 @@ Copie o arquivo de exemplo:
 cp .env.example .env
 ```
 
-Edite o `.env` com os dados da sua aplicacao no Bling:
+Edite o `.env` com os dados da sua aplicação no Bling:
 
 ```env
 BLING_CLIENT_ID=seu_client_id
@@ -53,7 +53,7 @@ BLING_CLIENT_SECRET=seu_client_secret
 BLING_REDIRECT_URI=https://seu-dominio.com/oauth/callback
 ```
 
-Por padrao, os tokens sao salvos em SQLite. Se quiser salvar em JSON:
+Por padrão, os tokens são salvos em SQLite. Se quiser salvar em JSON:
 
 ```env
 BLING_TOKEN_STORE=file
@@ -86,9 +86,9 @@ Depois de salvar o token, rode:
 uv run python examples/authenticated_request.py
 ```
 
-Esse exemplo usa o token salvo, renova se necessario e chama um endpoint de homologacao do Bling.
+Esse exemplo usa o token salvo, renova se necessário e chama um endpoint de homologação do Bling.
 
-### 3. Usar no seu codigo
+### 3. Usar no seu código
 
 ```python
 import httpx
@@ -117,7 +117,7 @@ response.raise_for_status()
 print(response.json())
 ```
 
-## Comandos uteis para desenvolvimento
+## Comandos úteis para desenvolvimento
 
 Rodar lint, checagem de tipos e testes:
 
@@ -137,6 +137,6 @@ Rodar apenas os testes:
 uv run --extra dev pytest
 ```
 
-## Licenca
+## Licença
 
 MIT. Veja [LICENSE](LICENSE).
