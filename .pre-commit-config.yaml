@@ -1,0 +1,12 @@
+# Install: pip install -e ".[dev]" && pre-commit install
+# Run everything locally (same as CI): make check   OR   pre-commit run --all-files
+
+repos:
+  - repo: local
+    hooks:
+      - id: project-checks
+        name: ruff, basedpyright, pytest
+        language: system
+        entry: bash scripts/check.sh
+        pass_filenames: false
+        always_run: true
