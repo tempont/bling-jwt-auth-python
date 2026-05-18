@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "bling-jwt-auth"
-version = "0.1.0"
+dynamic = ["version"]
 description = "OAuth 2.0 / JWT authentication helpers for the Bling API v3"
 readme = "README.md"
 license = "MIT"
@@ -45,8 +45,13 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/bling_jwt_auth"]
 
+[tool.hatch.version]
+path = "src/bling_jwt_auth/__init__.py"
+
 [tool.hatch.build.targets.sdist]
 include = [
+    "/.env.example",
+    "/docs",
     "/scripts",
     "/src",
     "/tests",

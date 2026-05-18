@@ -13,7 +13,11 @@ if TYPE_CHECKING:
 
 
 def create_token_store(settings: BlingAuthSettings) -> SQLiteTokenStore | FileTokenStore:
-    """Return the token backend selected in ``settings``."""
+    """Create the token backend selected by ``settings.token_store``.
+
+    ``TokenStoreKind.FILE`` returns :class:`FileTokenStore`; every other
+    supported value currently returns :class:`SQLiteTokenStore`.
+    """
     path = settings.token_store_path
     if settings.token_store is TokenStoreKind.FILE:
         return FileTokenStore(path)

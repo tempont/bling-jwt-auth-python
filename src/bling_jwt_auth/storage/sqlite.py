@@ -10,7 +10,12 @@ from bling_jwt_auth.models.token import StoredToken
 
 
 class SQLiteTokenStore:
-    """Persist tokens in a local SQLite database."""
+    """SQLite token store for a single Bling account.
+
+    Tokens are stored as one JSON payload in the ``bling_tokens`` table. This is
+    the default backend because it avoids partial JSON writes and is convenient
+    for local scripts, CLIs, and small services.
+    """
 
     _SCHEMA = """
     CREATE TABLE IF NOT EXISTS bling_tokens (
@@ -20,12 +25,17 @@ class SQLiteTokenStore:
     """
 
     def __init__(self, path: Path | None = None) -> None:
-        """Use ``path`` or the default under ``~/.config/bling_jwt_auth/tokens.db``."""
+        """Create a SQLite token store.
+
+        Args:
+            path: Optional database path. Defaults to
+                ``~/.config/bling_jwt_auth/tokens.db``.
+        """
         self._path = path or (Path.home() / ".config" / "bling_jwt_auth" / "tokens.db")
 
     @property
     def path(self) -> Path:
-        """Database file path."""
+        """SQLite database path used by this store."""
         return self._path
 
     def _bootstrap(self, conn: sqlite3.Connection) -> None:
@@ -51,7 +61,7 @@ class SQLiteTokenStore:
         return StoredToken.model_validate(payload)
 
     def save(self, token: StoredToken) -> None:
-        """Upsert the single-row token snapshot and commit."""
+        """Insert or replace the single-row token snapshot and commit."""
         self._path.parent.mkdir(parents=True, exist_ok=True)
         data = json.dumps(token.model_dump(mode="json"), sort_keys=True)
         conn = sqlite3.connect(self._path)

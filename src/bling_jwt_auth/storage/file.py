@@ -12,15 +12,25 @@ from bling_jwt_auth.models.token import StoredToken
 
 
 class FileTokenStore:
-    """Store credentials as JSON on disk (single account)."""
+    """JSON-file token store for a single Bling account.
+
+    The store writes a complete token snapshot to disk using a temporary file
+    followed by an atomic replace. On POSIX systems it attempts to restrict file
+    permissions to ``0600`` after each save.
+    """
 
     def __init__(self, path: Path | None = None) -> None:
-        """Use ``path`` or the default under ``~/.config/bling_jwt_auth/token.json``."""
+        """Create a JSON token store.
+
+        Args:
+            path: Optional token file path. Defaults to
+                ``~/.config/bling_jwt_auth/token.json``.
+        """
         self._path = path or (Path.home() / ".config" / "bling_jwt_auth" / "token.json")
 
     @property
     def path(self) -> Path:
-        """Resolved filesystem path."""
+        """Filesystem path used by this store."""
         return self._path
 
     def load(self) -> StoredToken | None:

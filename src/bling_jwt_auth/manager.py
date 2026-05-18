@@ -14,7 +14,13 @@ if TYPE_CHECKING:
 
 
 class TokenManager:
-    """Combine :class:`OAuthClient` with a :class:`TokenStore` for simple workflows."""
+    """High-level token workflow for one Bling account.
+
+    ``TokenManager`` combines an :class:`~bling_jwt_auth.oauth.client.OAuthClient`
+    with a :class:`~bling_jwt_auth.storage.base.TokenStore`. It is the easiest
+    entry point for applications that want to save tokens after OAuth and later
+    ask for a valid access token without manually checking expiry.
+    """
 
     def __init__(
         self,
@@ -22,20 +28,32 @@ class TokenManager:
         store: TokenStore,
         settings: BlingAuthSettings,
     ) -> None:
-        """Wire an OAuth client, persistent store, and shared settings."""
+        """Create a manager using an OAuth client, token store, and settings."""
         self._oauth = oauth
         self._store = store
         self._settings = settings
 
     def save_from_code(self, code: str) -> StoredToken:
-        """Exchange ``code`` and persist the resulting tokens."""
+        """Exchange an OAuth callback code and persist the resulting token bundle.
+
+        Args:
+            code: Authorization code received by the configured redirect URI.
+
+        Returns:
+            The token snapshot written to the configured store.
+        """
         token_response = self._oauth.exchange_code(code)
         stored = StoredToken.from_token_response(token_response)
         self._store.save(stored)
         return stored
 
     def get_access_token(self) -> str:
-        """Return a usable access token, refreshing from disk when needed."""
+        """Return a valid access token, refreshing and saving when needed.
+
+        Raises:
+            TokenNotFoundError: If no token has been saved yet.
+            OAuthRequestError: If a refresh request fails.
+        """
         stored = self._store.load()
         if stored is None:
             msg = "No token in store; complete OAuth or call save_from_code first"
@@ -47,9 +65,9 @@ class TokenManager:
         return stored.access_token
 
     def load_stored(self) -> StoredToken | None:
-        """Return the raw stored bundle without refreshing."""
+        """Return the stored token snapshot without checking expiry or refreshing."""
         return self._store.load()
 
     def clear(self) -> None:
-        """Remove persisted credentials."""
+        """Delete persisted credentials from the configured store."""
         self._store.clear()
