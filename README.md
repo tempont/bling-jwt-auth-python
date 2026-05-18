@@ -1,5 +1,7 @@
 # bling-jwt-auth-python
 
+Repositório: [github.com/tempont/bling-jwt-auth-python](https://github.com/tempont/bling-jwt-auth-python) · PyPI: [`bling-jwt-auth`](https://pypi.org/project/bling-jwt-auth/)
+
 Biblioteca Python simples para autenticar na **API v3 do Bling** usando OAuth 2.0 e tokens JWT.
 
 Ela ajuda a:
@@ -22,13 +24,13 @@ Versão em inglês: [docs/README.en.md](docs/README.en.md)
 Instale pelo `pip`:
 
 ```bash
-pip install bling-jwt-auth-python
+pip install bling-jwt-auth
 ```
 
 Ou instale direto do GitHub:
 
 ```bash
-pip install "git+https://github.com/mercanatu/bling-jwt-auth-python.git"
+pip install "git+https://github.com/tempont/bling-jwt-auth-python.git"
 ```
 
 Para desenvolvimento local neste repositório, use:

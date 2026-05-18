@@ -1,1 +1,1 @@
-"""Test suite for bling-jwt-auth-python."""
+"""Test suite for the bling-jwt-auth package."""
