@@ -1,6 +1,11 @@
 # bling-jwt-auth-python
 
-Repository: [github.com/tempont/bling-jwt-auth-python](https://github.com/tempont/bling-jwt-auth-python) · PyPI: [`bling-jwt-auth`](https://pypi.org/project/bling-jwt-auth/)
+[![PyPI](https://img.shields.io/pypi/v/bling-jwt-auth.svg)](https://pypi.org/project/bling-jwt-auth/)
+[![Python](https://img.shields.io/pypi/pyversions/bling-jwt-auth.svg)](https://pypi.org/project/bling-jwt-auth/)
+[![CI](https://github.com/tempont/bling-jwt-auth-python/actions/workflows/ci.yml/badge.svg)](https://github.com/tempont/bling-jwt-auth-python/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/tempont/bling-jwt-auth-python.svg)](../LICENSE)
+[![README Português](https://img.shields.io/badge/README-Portugu%C3%AAs-green)](../README.md)
+[![GitHub](https://img.shields.io/badge/GitHub-tempont%2Fbling--jwt--auth--python-181717?logo=github)](https://github.com/tempont/bling-jwt-auth-python)
 
 Python library for OAuth 2.0 authentication with the **Bling API v3**, including the JWT mode headers required by current Bling API endpoints.
 
@@ -11,14 +16,74 @@ Use this package when your application needs to obtain, persist, and refresh Bli
 - store tokens locally in SQLite or JSON;
 - refresh the `access_token` before it expires;
 - build the headers required for authenticated API v3 requests.
-
-Primary Portuguese README: [../README.md](../README.md)
+- make authenticated calls with `connect()`, `BlingClient`, or `BlingAuth`
+  without manually wiring OAuth client, store, manager, and headers.
 
 ## Requirements
 
 - Python 3.14 or newer
 - An OAuth application registered in Bling
 - The application's `client_id`, `client_secret`, and `redirect_uri`
+
+## Structure
+
+```text
+├── 📁 docs
+│   └── 📝 README.en.md
+├── 📁 examples
+│   ├── 🐍 __init__.py
+│   ├── 🐍 authenticated_request.py
+│   ├── 🐍 client_request.py
+│   ├── 🐍 httpx_auth_request.py
+│   └── 🐍 oauth_flow.py
+├── 📁 scripts
+│   ├── 🐍 __init__.py
+│   ├── 📄 check.sh
+│   └── 🐍 package_version.py
+├── 📁 src
+│   └── 📁 bling_jwt_auth
+│       ├── 📁 models
+│       │   ├── 🐍 __init__.py
+│       │   └── 🐍 token.py
+│       ├── 📁 oauth
+│       │   ├── 🐍 __init__.py
+│       │   └── 🐍 client.py
+│       ├── 📁 storage
+│       │   ├── 🐍 __init__.py
+│       │   ├── 🐍 base.py
+│       │   ├── 🐍 factory.py
+│       │   ├── 🐍 file.py
+│       │   └── 🐍 sqlite.py
+│       ├── 🐍 __init__.py
+│       ├── 🐍 auth.py
+│       ├── 🐍 client.py
+│       ├── 🐍 config.py
+│       ├── 🐍 constants.py
+│       ├── 🐍 exceptions.py
+│       ├── 🐍 headers.py
+│       ├── 🐍 manager.py
+│       └── 📄 py.typed
+├── 📁 tests
+│   ├── 🐍 __init__.py
+│   ├── 🐍 conftest.py
+│   ├── 🐍 test_auth.py
+│   ├── 🐍 test_client.py
+│   ├── 🐍 test_headers.py
+│   ├── 🐍 test_oauth_client.py
+│   ├── 🐍 test_storage_factory.py
+│   ├── 🐍 test_storage_file.py
+│   ├── 🐍 test_storage_sqlite.py
+│   ├── 🐍 test_token_manager.py
+│   └── 🐍 url_utils.py
+├── ⚙️ .env.example
+├── ⚙️ .gitignore
+├── ⚙️ .pre-commit-config.yaml
+├── 📄 LICENSE
+├── 📄 Makefile
+├── 📝 README.md
+├── ⚙️ pyproject.toml
+└── 📄 uv.lock
+```
 
 ## Installation
 
@@ -30,12 +95,6 @@ Install directly from the repository:
 
 ```bash
 pip install "git+https://github.com/tempont/bling-jwt-auth-python.git"
-```
-
-For local development:
-
-```bash
-uv sync --extra dev
 ```
 
 ## Configuration
@@ -97,35 +156,42 @@ with OAuthClient(settings) as oauth:
     manager.save_from_code("code-from-callback")
 ```
 
-### 3. Use a valid access token
+### 3. Make authenticated requests
 
 ```python
-import httpx
+from bling_jwt_auth import connect
 
-from bling_jwt_auth import (
-    BlingAuthSettings,
-    OAuthClient,
-    TokenManager,
-    bling_api_headers,
-    create_token_store,
-)
+with connect() as bling:
+    response = bling.get("/Api/v3/produtos")
 
-settings = BlingAuthSettings.load()
-store = create_token_store(settings)
-
-with OAuthClient(settings) as oauth:
-    manager = TokenManager(oauth, store, settings)
-    access_token = manager.get_access_token()
-
-response = httpx.get(
-    "https://api.bling.com.br/Api/v3/produtos",
-    headers=bling_api_headers(access_token),
-)
 response.raise_for_status()
 print(response.json())
 ```
 
-`TokenManager.get_access_token()` reads the stored token, checks expiration using `BLING_REFRESH_SKEW_SECONDS`, and refreshes automatically when needed.
+`connect()` loads configuration, opens the configured token store, injects
+`Authorization`/`enable-jwt` headers, and refreshes the token automatically when
+needed.
+
+For an explicit SDK style:
+
+```python
+from bling_jwt_auth import BlingClient
+
+with BlingClient.from_env() as bling:
+    response = bling.get("/Api/v3/produtos")
+```
+
+To use your own HTTP client:
+
+```python
+import httpx
+
+from bling_jwt_auth import BlingAuth
+
+with BlingAuth.from_env() as auth:
+    with httpx.Client(auth=auth, base_url="https://api.bling.com.br") as client:
+        response = client.get("/Api/v3/produtos")
+```
 
 ## Runnable Examples
 
@@ -151,10 +217,20 @@ uv run python examples/authenticated_request.py
 
 This example uses the same token saved by the OAuth flow, refreshes it if needed, and calls Bling's product homologation endpoint.
 
+The new API variants are also available:
+
+```bash
+uv run python examples/client_request.py
+uv run python examples/httpx_auth_request.py
+```
+
 ## Main API
 
 | Object | Use |
 | --- | --- |
+| `connect` | Creates an authenticated `BlingClient` using `BLING_*` and the configured token store. |
+| `BlingClient` | SDK-style client for authenticated calls with `request`, `get`, `post`, `put`, `patch`, and `delete`. |
+| `BlingAuth` | `httpx.Auth` adapter that injects headers and uses `TokenManager` for automatic refresh. |
 | `BlingAuthSettings` | Loads configuration from `BLING_*` variables and `.env`. |
 | `OAuthClient` | Synchronous client for authorization, code exchange, refresh, and revocation. |
 | `TokenManager` | Coordinates `OAuthClient` + `TokenStore` to save and refresh tokens. |
