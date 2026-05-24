@@ -17,3 +17,10 @@ wheels/
 .env
 *.db
 token.json
+
+# Project-specific files
+.codegraph/
+AGENTS.md
+
+# Cursor files
+.cursor/
