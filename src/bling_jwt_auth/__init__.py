@@ -1,5 +1,7 @@
 """Bling API v3 OAuth helpers (JWT-ready)."""
 
+from bling_jwt_auth.auth import BlingAuth
+from bling_jwt_auth.client import BlingClient, connect
 from bling_jwt_auth.config import BlingAuthSettings, TokenStoreKind
 from bling_jwt_auth.exceptions import BlingAuthError, OAuthRequestError, TokenNotFoundError
 from bling_jwt_auth.headers import bling_api_headers
@@ -12,8 +14,10 @@ from bling_jwt_auth.storage.file import FileTokenStore
 from bling_jwt_auth.storage.sqlite import SQLiteTokenStore
 
 __all__ = [
+    "BlingAuth",
     "BlingAuthError",
     "BlingAuthSettings",
+    "BlingClient",
     "FileTokenStore",
     "OAuthClient",
     "OAuthRequestError",
@@ -25,7 +29,8 @@ __all__ = [
     "TokenStore",
     "TokenStoreKind",
     "bling_api_headers",
+    "connect",
     "create_token_store",
 ]
 
-__version__ = "0.1.1"
+__version__ = "0.3.0"

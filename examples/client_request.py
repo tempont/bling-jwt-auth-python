@@ -1,15 +1,8 @@
-"""Call the Bling homologation endpoint with the high-level ``connect`` helper.
-
-Loads secrets from `./.env` (see `env_file` on `BlingAuthSettings`) and/or exported
-`BLING_*` environment variables — run from the repo root next to `.env`.
-
-Uses the same token store as `oauth_flow.py` (see `BLING_TOKEN_STORE` and
-`BLING_TOKEN_STORE_PATH`).
+"""Call Bling using the SDK-style ``BlingClient.from_env`` constructor.
 
 Example:
-    uv sync
     uv run python examples/oauth_flow.py
-    uv run python examples/authenticated_request.py
+    uv run python examples/client_request.py
 """
 
 from __future__ import annotations
@@ -18,7 +11,7 @@ import json
 import sys
 from typing import Any, cast
 
-from bling_jwt_auth import TokenNotFoundError, connect
+from bling_jwt_auth import BlingClient, TokenNotFoundError
 
 HOMOLOGACAO_PRODUTOS_PATH = "/Api/v3/homologacao/produtos"
 
@@ -30,9 +23,9 @@ def _summarize_body(text: str, *, max_len: int = 800) -> str:
 
 
 def main() -> None:
-    """GET homologação produtos using the configured token store."""
+    """GET homologação produtos through the SDK-style client."""
     try:
-        with connect() as bling:
+        with BlingClient.from_env() as bling:
             response = bling.get(HOMOLOGACAO_PRODUTOS_PATH)
     except TokenNotFoundError:
         msg = "No token found. Run `uv run python examples/oauth_flow.py` first."
@@ -54,13 +47,13 @@ def main() -> None:
     if not isinstance(parsed, dict):
         print("Unexpected response: JSON must be an object", file=sys.stderr)
         sys.exit(1)
+
     body: dict[str, Any] = cast("dict[str, Any]", parsed)
     data: Any | None = body.get("data")
     preview_payload: Any = body if data is None else data
     preview = json.dumps(preview_payload, indent=2, ensure_ascii=False)
     print(f"HTTP {response.status_code} OK")
     print(preview)
-    print("Token from store is valid for the Bling API (homologação GET).")
 
 
 if __name__ == "__main__":

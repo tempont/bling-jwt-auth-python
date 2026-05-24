@@ -192,7 +192,9 @@ class OAuthClient:
         payload = response.json()
         if not isinstance(payload, dict):
             msg = "Unexpected token response: JSON object expected"
-            raise OAuthRequestError(msg, status_code=response.status_code, response_body=response.text)
+            raise OAuthRequestError(
+                msg, status_code=response.status_code, response_body=response.text
+            )
         return TokenResponse.model_validate(payload)
 
     def _raise_for_status(self, response: httpx.Response) -> None:

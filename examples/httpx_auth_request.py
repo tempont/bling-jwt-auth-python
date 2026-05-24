@@ -1,15 +1,8 @@
-"""Call the Bling homologation endpoint with the high-level ``connect`` helper.
-
-Loads secrets from `./.env` (see `env_file` on `BlingAuthSettings`) and/or exported
-`BLING_*` environment variables — run from the repo root next to `.env`.
-
-Uses the same token store as `oauth_flow.py` (see `BLING_TOKEN_STORE` and
-`BLING_TOKEN_STORE_PATH`).
+"""Call Bling with a plain ``httpx.Client`` and ``BlingAuth``.
 
 Example:
-    uv sync
     uv run python examples/oauth_flow.py
-    uv run python examples/authenticated_request.py
+    uv run python examples/httpx_auth_request.py
 """
 
 from __future__ import annotations
@@ -18,9 +11,11 @@ import json
 import sys
 from typing import Any, cast
 
-from bling_jwt_auth import TokenNotFoundError, connect
+import httpx
 
-HOMOLOGACAO_PRODUTOS_PATH = "/Api/v3/homologacao/produtos"
+from bling_jwt_auth import BlingAuth, TokenNotFoundError
+
+HOMOLOGACAO_PRODUTOS_URL = "https://api.bling.com.br/Api/v3/homologacao/produtos"
 
 
 def _summarize_body(text: str, *, max_len: int = 800) -> str:
@@ -30,10 +25,13 @@ def _summarize_body(text: str, *, max_len: int = 800) -> str:
 
 
 def main() -> None:
-    """GET homologação produtos using the configured token store."""
+    """GET homologação produtos using only the httpx auth adapter."""
     try:
-        with connect() as bling:
-            response = bling.get(HOMOLOGACAO_PRODUTOS_PATH)
+        with (
+            BlingAuth.from_env() as auth,
+            httpx.Client(auth=auth, timeout=30.0) as client,
+        ):
+            response = client.get(HOMOLOGACAO_PRODUTOS_URL)
     except TokenNotFoundError:
         msg = "No token found. Run `uv run python examples/oauth_flow.py` first."
         print(msg, file=sys.stderr)
@@ -60,7 +58,6 @@ def main() -> None:
     preview = json.dumps(preview_payload, indent=2, ensure_ascii=False)
     print(f"HTTP {response.status_code} OK")
     print(preview)
-    print("Token from store is valid for the Bling API (homologação GET).")
 
 
 if __name__ == "__main__":
