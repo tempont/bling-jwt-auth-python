@@ -21,7 +21,7 @@ Use este pacote quando sua aplicação precisa obter, persistir e renovar tokens
 
 ## Requisitos
 
-- Python 3.14 ou superior
+- Python 3.12 ou superior
 - Uma aplicação OAuth cadastrada no Bling
 - `client_id`, `client_secret` e `redirect_uri` da aplicação OAuth
 

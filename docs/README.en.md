@@ -21,7 +21,7 @@ Use this package when your application needs to obtain, persist, and refresh Bli
 
 ## Requirements
 
-- Python 3.14 or newer
+- Python 3.12 or newer
 - An OAuth application registered in Bling
 - The application's `client_id`, `client_secret`, and `redirect_uri`
 

@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "OAuth 2.0 / JWT authentication helpers for the Bling API v3"
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 authors = [{ name = "tempont" }]
 keywords = ["bling", "oauth2", "jwt", "authentication", "erp", "api"]
 classifiers = [
@@ -17,6 +17,8 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Typing :: Typed",
 ]
@@ -64,7 +66,7 @@ include = [
 testpaths = ["tests"]
 
 [tool.ruff]
-target-version = "py314"
+target-version = "py312"
 line-length = 100
 indent-width = 4
 exclude = [".git", ".ruff_cache", ".venv"]
@@ -116,7 +118,7 @@ task-tags = ["TODO", "FIXME", "XXX", "HACK"]
 convention = "google"
 
 [tool.pyright]
-pythonVersion = "3.14"
+pythonVersion = "3.12"
 typeCheckingMode = "strict"
 failOnWarnings = true
 venvPath = "."
